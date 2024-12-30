@@ -19,7 +19,7 @@ public class ToDoListService {
     // list of observers
     private List<Observer> observers;
 
-    private static ToDoListService instance;
+    private static volatile ToDoListService instance;
 
     private ToDoListService() {
         tasks = new ConcurrentHashMap<>();
@@ -29,7 +29,9 @@ public class ToDoListService {
 
     public static synchronized ToDoListService getInstance() {
         if (instance == null) {
-            instance = new ToDoListService();
+            synchronized (ToDoListService.class) {
+                instance = new ToDoListService();
+            }
         }
         return instance;
     }
