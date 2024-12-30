@@ -21,6 +21,7 @@ public class SprintService {
     Map<String, Sprint> sprintMap;
     Map<String, Task> taskMap;
     private Map<String, List<String>> userTasks;
+    private final Object lock = new Object();
 
     private SprintService() {
         this.sprintMap = new ConcurrentHashMap<>();
@@ -98,7 +99,7 @@ public class SprintService {
         }
 
         userTasks.values().forEach(taskList -> {
-            synchronized (taskList) {
+            synchronized (lock) {
                 taskList.remove(task.getTaskId());
                 sprint.getTasks().remove(task.getTaskId());
             }
@@ -111,7 +112,7 @@ public class SprintService {
             throw new IllegalArgumentException("Task does not exist");
         }
 
-        synchronized (task) {
+        synchronized (lock) {
             Status currentStatus = task.getStatus();
 
             if ((Status.TODO.equals(currentStatus) && Status.IN_PROGESS.equals(newStatus)) ||
@@ -151,16 +152,28 @@ public class SprintService {
         return taskIds;
     }
 
-    public List<String> getDelayedTask(String sprintId) {
+    public List<String> getDelayedTasks(String sprintId) {
         List<String> delayedTasks = new ArrayList<>();
         Sprint sprint = sprintMap.get(sprintId);
+        if (sprint == null) {
+            throw new IllegalArgumentException("Invalid sprint ID");
+        }
+
+        LocalDateTime sprintEndTime = sprint.getEndTime();
+        if (sprintEndTime == null) {
+            throw new IllegalStateException("Sprint end time is not set");
+        }
+
         Map<String, Task> tasks = sprint.getTasks();
-        for (Map.Entry<String, Task> entry : tasks.entrySet()) {
-            if (sprint.getEndTime().isBefore(LocalDateTime.now()) || entry.getValue().getEndTime() != null
-                    && entry.getValue().getEndTime().isAfter(sprint.getEndTime())) {
-                delayedTasks.add(entry.getValue().getTaskId());
+        for (Task task : tasks.values()) {
+            LocalDateTime taskEndTime = task.getEndTime();
+            // Check if task end time exists and is after the sprint's end time
+            if (taskEndTime != null && taskEndTime.isAfter(sprintEndTime)) {
+                delayedTasks.add(task.getTaskId());
             }
         }
+
         return delayedTasks;
     }
+
 }

@@ -80,8 +80,8 @@ public class SplitwiseService {
     }
 
     private void updateBalance(User user1, User user2, double amount) {
-        user1.getBalances().compute(getBalanceKey(user1, user2), (key, oldValue) ->
-                (oldValue == null ? 0.0 : oldValue) + amount);
+        String key = getBalanceKey(user1, user2);
+        user1.getBalances().put(key, user1.getBalances().getOrDefault(key, 0.0) + amount);
     }
 
     private String getBalanceKey(User user1, User user2) {
@@ -97,11 +97,15 @@ public class SplitwiseService {
                 String key = getBalanceKey(user1, user2);
                 double balance = user1.getBalances().getOrDefault(key, 0.0);
 
+                // If the balance is positive (i.e., balance > 0), it means user1 owes user2 money. In this case, a transaction is created where user1 pays user2.
+                //If the balance is negative (i.e., balance < 0), it means user2 owes user1 money. In this case, a transaction is created where user2 pays user1.
                 if (balance > 0) {
                     createTransaction(user1, user2, balance);
                 } else if (balance < 0) {
                     createTransaction(user2, user1, Math.abs(balance));
                 }
+
+                // After the transaction is created, the balances between the two users are reset to zero. This is done by calling the resetBalances function, which sets both users' balances related to each other to 0.0, effectively "settling" the balance.
                 user1.getBalances().put(key, 0.0);
                 user2.getBalances().put(getBalanceKey(user2, user1), 0.0);
             }
