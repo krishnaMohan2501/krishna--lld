@@ -1,2 +1,6 @@
-package com.mc.lld.db;public enum ColumnType {
+package com.mc.lld.db;
+
+
+enum ColumnType {
+    STRING, INT
 }

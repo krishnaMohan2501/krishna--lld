@@ -1,7 +1,5 @@
 package com.mc.lld.todo.observer;
 
-
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
