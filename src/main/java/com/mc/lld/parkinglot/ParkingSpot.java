@@ -2,12 +2,14 @@ package com.mc.lld.parkinglot;
 
 public class ParkingSpot {
     private final int spotNumber;
+    private final int floorNumber;
     private final VehicleType vehicleType;
     private Vehicle parkedVehicle;
 
-    public ParkingSpot(int spotNumber, VehicleType vehicleType) {
+    public ParkingSpot(int spotNumber, int floorNumber, VehicleType vehicleType) {
         this.spotNumber = spotNumber;
         this.vehicleType = vehicleType;
+        this.floorNumber = floorNumber;
     }
 
     public synchronized boolean isAvailable() {
@@ -37,4 +39,6 @@ public class ParkingSpot {
     public int getSpotNumber() {
         return spotNumber;
     }
+
+    public int getFloorNumber() { return floorNumber; }
 }

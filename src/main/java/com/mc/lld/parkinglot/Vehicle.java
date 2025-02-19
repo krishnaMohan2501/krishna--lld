@@ -1,15 +1,14 @@
 package com.mc.lld.parkinglot;
 
+import lombok.Getter;
+
+@Getter
 public abstract class Vehicle {
-    protected String licensePlate;
+    protected String licenseId;
     protected VehicleType type;
 
-    public Vehicle(String licensePlate, VehicleType type) {
-        this.licensePlate = licensePlate;
+    public Vehicle(String licenseId, VehicleType type) {
+        this.licenseId = licenseId;
         this.type = type;
-    }
-
-    public VehicleType getType() {
-        return type;
     }
 }

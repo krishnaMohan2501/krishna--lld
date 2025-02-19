@@ -46,6 +46,7 @@ public class Elevator implements Runnable {
         lock.lock();
         try {
             if (currentPassengers + 1 <= capacity) {
+
                 requests.add(request);
                 destinationFloors.add(request.getToFloor());
                 if (direction == Direction.IDLE) {
