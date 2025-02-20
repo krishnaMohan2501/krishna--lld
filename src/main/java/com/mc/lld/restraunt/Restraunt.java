@@ -22,7 +22,7 @@ public class Restraunt {
     }
 
     public void addBranch(String branchName, String pincode) {
-        Branch branch = new Branch(branchName, pincode, this); // Pass this restaurant as reference
+        Branch branch = new Branch(branchName, pincode); // Pass this restaurant as reference
         branches.add(branch);
     }
 

@@ -36,8 +36,8 @@ public class RestrauntManagementSystem {
         return restraunt;
     }
 
-    public Map<Branch, MenuItem> searchItem(String keyword, User user) {
-        Map<Branch, MenuItem> result = new HashMap<>();
+    public Map<String, Map<String, MenuItem>> searchItem(String keyword, User user) {
+        Map<String, Map<String, MenuItem>> result = new HashMap<>();
 
         for (Restraunt r : restraunt.values()) {
             // Find a branch in the user's pincode
@@ -53,7 +53,13 @@ public class RestrauntManagementSystem {
                         .findFirst();
 
                 // Add to result if a match is found
-                menuItem.ifPresent(item -> result.put(branch, item));
+
+                menuItem.ifPresent(item ->
+                        result.put(branch.getId(), new HashMap() {{
+                            put(r.getId(), item);
+                        }})
+                );
+                break;
             }
         }
 
@@ -120,6 +126,21 @@ public class RestrauntManagementSystem {
         System.out.println("Notification: Order " + order.getId() + " has been placed at " + restraunt.getName() + " And branch name = " + order.getBranch().getBranchName());
 
         // You can enhance this by integrating a messaging system like Kafka, RabbitMQ, or an API call.
+    }
+
+    public void rateFood(String id, String branchName, String pincode, int rating, String customerName) {
+        Restraunt restaurant = restraunt.get(id);
+        if (restaurant != null) {
+            for (Branch branch : restaurant.getBranches()) {
+                if (branch.getBranchName().equals(branchName) && branch.getPincode().equals(pincode)) {
+                    branch.addRating(rating, customerName);
+                    return;
+                }
+            }
+            System.out.println("Branch not found in the specified pincode.");
+        } else {
+            System.out.println("Restaurant not found.");
+        }
     }
 
 }
